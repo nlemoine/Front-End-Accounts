@@ -34,7 +34,7 @@ abstract class AccountBase
 
     public static function init()
     {
-        add_action('plugins_loaded', array(static::instance(), '_setup'), 10);
+        add_action('after_setup_theme', array(static::instance(), '_setup'), 10);
     }
 
     abstract public function _setup();
