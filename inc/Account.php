@@ -208,6 +208,7 @@ class Account extends SectionBase
                 $user->user_pass = $pass;
                 $password_changed = true;
             } else {
+                unset($user->data->user_pass);
                 $this->addMessage('pass_error', 'error', __('Could not update password.', FE_ACCOUNTS_TD));
             }
         } else {
