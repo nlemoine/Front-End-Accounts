@@ -32,7 +32,7 @@ class ForgotPassword extends SectionBase
 
         if (!empty($errors)) {
             foreach ($errors as $k => $err) {
-                $this->addError("validation_{$k}", $err);
+                $this->addMessage("validation_{$k}", 'error', $err);
             }
 
             return $this->dispatchFailed($postdata, $additional);
@@ -41,7 +41,7 @@ class ForgotPassword extends SectionBase
         $user = $this->getUser($valid['username']);
 
         if (!$user) {
-            $this->addError('bad_combo', __('Invalid username or email.', FE_ACCOUNTS_TD));
+            $this->addMessage('bad_combo', 'error', __('Invalid username or email.', FE_ACCOUNTS_TD));
 
             return $this->dispatchFailed($postdata, $additional);
         }
@@ -52,7 +52,7 @@ class ForgotPassword extends SectionBase
         $allow = apply_filters('allow_password_reset', true, $user->ID); // XXX wp-login.php compat
 
         if (!$allow) {
-            $this->addError('no_password_reset', __('Password reset is not allowed for this user.', FE_ACCOUNTS_TD));
+            $this->addMessage('no_password_reset', 'error', __('Password reset is not allowed for this user.', FE_ACCOUNTS_TD));
 
             return $this->dispatchFailed($postdata, $additional);
         }
@@ -121,12 +121,12 @@ class ForgotPassword extends SectionBase
         $this->saveKey($rk, $user);
 
         if ($this->sendResetEmail($user, $rk)) {
-            $this->addError('error_sending_email', __('Error sending email. Please contact the site administrator.', FE_ACCOUNTS_TD));
+            $this->addMessage('error_sending_email', 'error', __('Error sending email. Please contact the site administrator.', FE_ACCOUNTS_TD));
 
             return false;
         }
 
-        $this->addError('success', __('Password reset sent.', FE_ACCOUNTS_TD));
+        $this->addMessage('success', 'success', __('Password reset sent.', FE_ACCOUNTS_TD));
 
         return true;
     }

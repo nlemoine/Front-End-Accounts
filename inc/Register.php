@@ -42,7 +42,7 @@ class Register extends SectionBase
 
         if (!empty($errors)) {
             foreach ($errors as $k => $err) {
-                $this->addError("validation_{$k}", $err);
+                $this->addMessage("validation_{$k}", 'error', $err);
             }
 
             return $this->dispatchFailed($postdata, $additional);
@@ -53,7 +53,7 @@ class Register extends SectionBase
         $password = null;
         if ($this->allowUserPasswords()) {
             if ($valid['password'] !== $valid['password_again']) {
-                $this->addError('validation_passwordnomatch', __('Passwords must match.', FE_ACCOUNTS_TD));
+                $this->addMessage('validation_passwordnomatch', 'error', __('Passwords must match.', FE_ACCOUNTS_TD));
                 return $this->dispatchFailed($postdata, $additional);
             }
             $password = $valid['password'];
@@ -63,7 +63,7 @@ class Register extends SectionBase
 
         if (is_wp_error($result)) {
             foreach ($result->get_error_codes() as $code) {
-                $this->addError("validation_{$code}", $result->get_error_message($code));
+                $this->addMessage("validation_{$code}", 'error', $result->get_error_message($code));
             }
 
             return $this->dispatchFailed($postdata, $additional);

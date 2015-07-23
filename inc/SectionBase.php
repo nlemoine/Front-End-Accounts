@@ -21,7 +21,7 @@ namespace Chrisguitarguy\FrontEndAccounts;
  */
 abstract class SectionBase extends AccountBase
 {
-    private $errors = array();
+    private $messages = array();
 
     public function _setup()
     {
@@ -62,13 +62,15 @@ abstract class SectionBase extends AccountBase
 
             $this->act('frontend_accounts_after_title', $s);
 
-            $errors = $this->getErrors();
-            if( !empty($errors) && apply_filters("frontend_accounts_show_errors_{$s}", true, $additional) ) {
-                echo '<div class="frontend-accounts-errors">';
-                foreach ($errors as $key => $errmsg) {
-                    echo '<div class="frontend-accounts-error ', esc_attr($key), '">', $errmsg, '</div>';
+            $messages = $this->getMessages();
+            if( !empty($messages) && apply_filters("frontend_accounts_show_messages_{$s}", true, $additional) ) {
+				foreach ($messages as $type => $message_group) {
+					echo '<div class="' . apply_filters('fea_message_type_class', 'alert ' . $type, $type) . '">';
+					foreach ($message_group as $key => $message) {
+						echo '<p class="frontend-accounts-message ' . esc_attr($key) . '">' . $message . '</p>';
+					}
+					echo '</div>';
                 }
-                echo '</div>';
             }
 
             $this->act('frontend_accounts_before_form', $s);
@@ -101,29 +103,30 @@ abstract class SectionBase extends AccountBase
         return $sections;
     }
 
-    public function addError($key, $err)
+    public function addMessage($key, $type, $err)
     {
-        $this->errors[$key] = apply_filters(
+        $this->messages[$type][$key] = apply_filters(
             'frontend_accounts_' . $this->getName() . '_error_message',
             $err,
+			$type,
             $key,
             $this
         );
     }
 
-    public function removeError($key)
+    public function removeMessage($type, $key)
     {
-        if (isset($this->errors[$key])) {
-            unset($this->errors[$key]);
+        if (isset($this->messages[$type][$key])) {
+            unset($this->messages[$type][$key]);
             return true;
         }
 
         return false;
     }
 
-    public function getErrors()
+    public function getMessages()
     {
-        return apply_filters('frontend_accounts_errors_' . $this->getName(), $this->errors);
+        return apply_filters('frontend_accounts_errors_' . $this->getName(), $this->messages);
     }
 
     abstract public function getTitle();

@@ -34,8 +34,9 @@ class Account extends SectionBase
         $this->maybeRedirect();
 
         if ($this->hasNag()) {
-            $this->addError(
+            $this->addMessage(
                 'default_password_nag',
+				'info',
                 __("Looks like you're using a default password. Please change it.", FE_ACCOUNTS_TD)
             );
         }
@@ -51,7 +52,7 @@ class Account extends SectionBase
             empty($data[static::NONCE]) ||
             !wp_verify_nonce($_POST[static::NONCE], static::NONCE . get_current_user_id())
         ) {
-            $this->addError('bad_request', __('Bad Request. Try again?', FE_ACCOUNTS_TD));
+            $this->addMessage('bad_request', 'error', __('Bad Request. Try again?', FE_ACCOUNTS_TD));
             return;
         }
 
@@ -63,7 +64,7 @@ class Account extends SectionBase
 
         if (!empty($errors)) {
             foreach ($errors as $k => $err) {
-                $this->addError("validation_{$k}", $err);
+                $this->addMessage("validation_{$k}", 'error', $err);
             }
 
             return $this->dispatchFailed($data, $additional);
@@ -72,12 +73,12 @@ class Account extends SectionBase
         $user_id = $this->saveUser($to_save);
 
         if (!$user_id) {
-            $this->addError('save_error', __('Error saving! Try again.', FE_ACCOUNTS_TD));
+            $this->addMessage('save_error', 'error', __('Error saving! Try again.', FE_ACCOUNTS_TD));
 
             return $this->distpatchFailed($data, $additional);
         }
 
-        $this->addError('success', __('Account updated.', FE_ACCOUNTS_TD));
+        $this->addMessage('success', 'success', __('Account updated.', FE_ACCOUNTS_TD));
 
         do_action('frontend_accounts_account_save_success', $user_id, $this);
     }
@@ -207,7 +208,7 @@ class Account extends SectionBase
                 $user->user_pass = $pass;
                 $password_changed = true;
             } else {
-                $this->addError('pass_error', __('Could not update password.', FE_ACCOUNTS_TD));
+                $this->addMessage('pass_error', 'error', __('Could not update password.', FE_ACCOUNTS_TD));
             }
         } else {
             if (isset($user->data->user_pass)) {

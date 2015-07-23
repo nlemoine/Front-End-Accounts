@@ -45,7 +45,7 @@ class ResetPassword extends SectionBase
 
         if (!empty($errors)) {
             foreach ($errors as $k => $err) {
-                $this->addError("validation_{$k}", $err);
+                $this->addMessage("validation_{$k}", 'error', $err);
             }
 
             return $this->dispatchFailed($postdata, $reset_key);
@@ -54,7 +54,7 @@ class ResetPassword extends SectionBase
         do_action('validate_password_reset', new \WP_Error(), $user); // XXX wp-login.php compat, not 100% compat??
 
         if ($valid['password'] != $valid['password_again']) {
-            $this->addError('password_match', __('Password do not match.', FE_ACCOUNTS_TD));
+            $this->addMessage('password_match', 'error', __('Password do not match.', FE_ACCOUNTS_TD));
 
             return $this->dispatchFailed($postdata, $reset_key);
         }
@@ -62,7 +62,7 @@ class ResetPassword extends SectionBase
         // not really a way to check of this actually worked...
         $this->setPassword($user, $valid['password']);
 
-        $this->addError('success', __('Your password has been reset.', FE_ACCOUNTS_TD));
+        $this->addMessage('password_reset_success', 'success', __('Your password has been reset.', FE_ACCOUNTS_TD));
 
         do_action('frontend_accounts_reset_password_success', $postdata, $reset_key, $user, $this);
     }

@@ -24,11 +24,12 @@ class Login extends SectionBase
     {
         switch ($additional) {
         case 'password_reset':
-            $this->addError('password_reset', __('Your password has been reset. Please Log in.', FE_ACCOUNTS_TD));
+            $this->addMessage('password_reset', 'info', __('Your password has been reset. Please Log in.', FE_ACCOUNTS_TD));
             break;
         case 'registration_complete':
-            $this->addError(
+            $this->addMessage(
                 'registration_complete',
+				'success',
                 $this->allowUserPasswords() ? __('Registration complete, please log in.', FE_ACCOUNTS_TD) : __('Registration complete. Check your email for a password.', FE_ACCOUNTS_TD)
             );
             break;
@@ -45,7 +46,7 @@ class Login extends SectionBase
 
         if (!empty($errors)) {
             foreach ($errors as $k => $err) {
-                $this->addError("validation_{$k}", $err);
+                $this->addMessage("validation_{$k}", 'error', $err);
             }
 
             return $this->dispatchFailed($data, $additional);
@@ -55,7 +56,7 @@ class Login extends SectionBase
 
         if (!$user || is_wp_error($user)) {
             foreach ($user->get_error_codes() as $code) {
-                $this->addError("validation_{$code}", $this->getWpErrorMessage($code));
+                $this->addMessage("validation_{$code}", 'error', $this->getWpErrorMessage($code));
             }
 
             return $this->dispatchFailed($data, $additional);
